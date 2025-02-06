@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'config.dart';
+
 // ThemeData tetrisTheme() {
 //   return ThemeData(
 //     brightness: Brightness.dark,
@@ -66,3 +68,13 @@ class GameColors {
   static Color kDeepOrange = Colors.deepOrangeAccent;
   static Color kDeepYellow = Colors.yellowAccent.shade700;
 }
+
+const Map<Tetromino, Color> tetrominoColors = {
+  Tetromino.L: Color(0xFFFFA500), // Vibrant Orange 🍊
+  Tetromino.J: Color(0xFF0074E4), // Bright Royal Blue 🔵
+  Tetromino.O: Color(0xFFFFD700), // Bold Gold/Yellow 🌟
+  Tetromino.S: Color(0xFF00FA9A), // Neon Green 💚
+  Tetromino.Z: Color(0xFFFF1744), // Intense Red ❤️
+  Tetromino.T: Color(0xFF8A2BE2), // Electric Purple 💜
+  Tetromino.I: Color(0xFF00E5FF), // Cyan/Aqua 💠
+};

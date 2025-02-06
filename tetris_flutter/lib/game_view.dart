@@ -1,37 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tetris_flutter/game_piece.dart';
 import 'package:tetris_flutter/game_square.dart';
 import 'package:tetris_flutter/utils/config.dart';
 import 'package:tetris_flutter/utils/game_theme.dart';
-
-// GetX Controller for Game Logic
-class GameController extends GetxController {
-  var currentPiece = GamePiece(type: Tetromino.L).obs;
-
-  @override
-  void onInit() {
-    startGame();
-    super.onInit();
-  }
-
-  startGame() {
-    currentPiece.value.initializePiece();
-    Duration frameRate = const Duration(milliseconds: 400);
-    gameLoop(frameRate);
-  }
-
-  gameLoop(Duration frameRate) {
-    Timer.periodic(
-      frameRate,
-      (timer) {
-        currentPiece.value.movePiece(Direction.down);
-      },
-    );
-  }
-}
+import 'controller/game_controller.dart';
 
 class GameView extends StatelessWidget {
   GameView({super.key});
@@ -40,29 +12,61 @@ class GameView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final configController = Get.put(ConfigController());
-
     return Scaffold(
-      body: Obx(() => GridView.builder(
-            itemCount: configController.gameRowsLength.value *
-                configController.gameColumnLength.value,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: configController.gameRowsLength.value),
-            itemBuilder: (context, index) {
-              return Center(
-                child: controller.currentPiece.value.positions.contains(index)
-                    ? GameSquares(
-                        color: GameColors.kDeepOrange,
-                        text: index.toString(),
-                      )
-                    : GameSquares(
-                        color: GameColors.kSquareColor,
-                        text: index.toString(),
-                      ),
-              );
-            },
-          )),
+      body: Column(
+        children: [
+          Obx(() => Expanded(
+                flex: 8,
+                child: GridView.builder(
+                  itemCount: gameRowsLength.value * gameColumnLength.value,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: gameRowsLength.value),
+                  itemBuilder: (context, index) {
+                    int row = (index / gameRowsLength.value).floor();
+                    int column = index % gameRowsLength.value;
+                    return Center(
+                      child: Obx(() {
+                        if (controller.currentPiece.value.positions
+                            .contains(index)) {
+                          return GameSquares(
+                            color: controller.currentPiece.value.color,
+                            text: index.toString(),
+                          );
+                        } else if (gameBoard[row][column] != null) {
+                          final Tetromino tetromino = gameBoard[row][column]!;
+                          return GameSquares(
+                            color: tetrominoColors[tetromino] ?? Colors.white,
+                            text: '',
+                          );
+                        } else {
+                          return GameSquares(
+                            color: GameColors.kSquareColor,
+                            text: index.toString(),
+                          );
+                        }
+                      }),
+                    );
+                  },
+                ),
+              )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                  onPressed: controller.movePieceLeft,
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded)),
+              IconButton(
+                  onPressed: controller.rotatePiece,
+                  icon: const Icon(Icons.rotate_90_degrees_cw_rounded)),
+              IconButton(
+                  onPressed: controller.movePieceRight,
+                  icon: const Icon(Icons.arrow_forward_ios_rounded))
+            ],
+          ),
+          const Expanded(child: SizedBox())
+        ],
+      ),
     );
   }
 }

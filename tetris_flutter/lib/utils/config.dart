@@ -1,10 +1,5 @@
 import 'package:get/get.dart';
 
-class ConfigController extends GetxController {
-  RxInt gameRowsLength = 10.obs;
-  RxInt gameColumnLength = 15.obs;
-}
-
 enum Tetromino {
   L,
   J,
@@ -20,3 +15,12 @@ enum Direction {
   right,
   down,
 }
+
+Duration gameSpeed = const Duration(milliseconds: 500);
+RxInt gameRowsLength = 10.obs;
+RxInt gameColumnLength = 15.obs;
+
+//Game Board
+
+List<List<Tetromino?>> gameBoard = List.generate(gameColumnLength.value,
+    (j) => List.generate(gameRowsLength.value, (k) => null));
